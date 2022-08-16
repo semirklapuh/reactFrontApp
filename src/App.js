@@ -6,16 +6,21 @@ import Login from "./components/Login";
 import Home from "./components/Home";
 import Register from "./components/Register";
 import { ToastContainer } from "react-toastify";
+import PrivateRoutes from "./PrivateRoutes";
 
 function App() {
   //return <Login />;
   return (
     <BrowserRouter>
       <Routes>
-        {/* <Route path="/data" element={<DataComponent />} /> */}
         <Route path="/" index element={<Login />} />
-        <Route path="/home" index element={<Home />} />
         <Route path="/register" index element={<Register />} />
+        <Route element={<PrivateRoutes />}>
+          <Route path="/home" index element={<Home />} />
+        </Route>
+
+        {/* <Route path="/home" index element={<Home />} />
+        <Route path="/register" index element={<Register />} /> */}
       </Routes>
       <ToastContainer></ToastContainer>
     </BrowserRouter>

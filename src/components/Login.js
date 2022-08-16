@@ -51,6 +51,8 @@ const Login = () => {
         toast.success("Successful login", {
           position: toast.POSITION.TOP_RIGHT,
         });
+
+        localStorage.setItem("isAuthenticated", true);
         navigate("/home");
       } else {
         toast.error("Wrong username or password!", {
