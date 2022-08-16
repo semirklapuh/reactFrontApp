@@ -4,10 +4,12 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Axios from "axios";
 
 const Login = () => {
   let [loginData, setLoginData] = useState([]);
   let [user, setUser] = useState([]);
+  let [decryptedPassword, setDecryptedPassword] = useState("");
 
   useEffect(() => {
     checkUser(); // eslint-disable-next-line
@@ -15,8 +17,6 @@ const Login = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(event.target.elements.username.value);
-    console.log(event.target.elements.password.value);
     setLoginData({
       username: event.target.elements.username.value,
       password: event.target.elements.password.value,
@@ -32,11 +32,8 @@ const Login = () => {
       const response = await fetch(
         `http://localhost:4000/api/v1/loginData/getByUsername/${username}`
       );
-      // const data = await response.json();
-      // setUser(data);
-      // checkUser();
       response.json().then((res) => {
-        setUser(res);
+        decryptPassword(res.password, res);
       });
     } catch (error) {
       console.log("Failed to fetch from DB", error);
@@ -47,26 +44,34 @@ const Login = () => {
 
   let checkUser = () => {
     if (user.length !== 0) {
-      console.log(loginData);
-      console.log(user);
-
       if (
         user.username === loginData.username &&
-        user.password === loginData.password
+        decryptedPassword === loginData.password
       ) {
-        //alert("Successful login");
-        console.log("toast");
         toast.success("Successful login", {
           position: toast.POSITION.TOP_RIGHT,
         });
         navigate("/home");
       } else {
-        // alert("Wrong username or password!");
         toast.error("Wrong username or password!", {
           position: toast.POSITION.TOP_RIGHT,
         });
       }
     }
+  };
+
+  const decryptPassword = (encryption, res) => {
+    console.log("EE" + encryption);
+    Axios.post("http://localhost:4000/api/v1/loginData/decrypt-password", {
+      password: encryption,
+    })
+      .then((response) => {
+        setDecryptedPassword(response.data);
+        setUser(res);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
